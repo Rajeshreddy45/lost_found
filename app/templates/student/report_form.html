@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block content %}
+<section class="page-header"><div class="container-xxl"><span class="eyebrow">NEW CAMPUS REPORT</span><h1>Report a {{ report_type }} item</h1><p>Tell us what happened. Complete reports are approved automatically and compared with opposite-type reports.</p></div></section>
+<div class="container-xxl py-4"><div class="row g-4"><div class="col-lg-8"><div class="surface-card p-4 p-lg-5">
+ <div class="d-flex gap-2 mb-4"><a href="{{ url_for('student.report_new', report_type='lost') }}" class="btn {{ 'btn-brand' if report_type == 'lost' else 'btn-subtle' }}">I lost something</a><a href="{{ url_for('student.report_new', report_type='found') }}" class="btn {{ 'btn-brand' if report_type == 'found' else 'btn-subtle' }}">I found something</a></div>
+ <form method="post" enctype="multipart/form-data" class="needs-validation" action="{{ url_for('student.report_new', report_type=report_type) }}">
+ <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+ <h2 class="form-section-title">Item details</h2><div class="row g-3">
+  <div class="col-md-8"><label class="form-label" for="name">Item name *</label><input class="form-control" id="name" name="name" required minlength="3" maxlength="100" placeholder="e.g. Black Dell laptop" value="{{ request.form.get('name', '') }}"></div>
+  <div class="col-md-4"><label class="form-label" for="category">Category *</label><select class="form-select" id="category" name="category" required><option value="">Select category</option>{% for category in categories %}<option value="{{ category }}" {% if request.form.get('category') == category %}selected{% endif %}>{{ category }}</option>{% endfor %}</select></div>
+  <div class="col-12"><label class="form-label" for="description">Detailed description *</label><textarea class="form-control" id="description" name="description" rows="4" minlength="12" maxlength="2000" required placeholder="Color, brand, marks, stickers, and other useful details">{{ request.form.get('description', '') }}</textarea><div class="form-text">Include the details that help distinguish your item from similar ones.</div></div>
+ </div><h2 class="form-section-title mt-4">Where & when</h2><div class="row g-3">
+  <div class="col-md-6"><label class="form-label" for="location">Campus location *</label><input class="form-control" id="location" name="location" required maxlength="120" minlength="2" placeholder="e.g. Central Library, 2nd floor" value="{{ request.form.get('location', '') }}"></div>
+  <div class="col-md-3"><label class="form-label" for="event_date">Date *</label><input class="form-control" id="event_date" name="event_date" type="date" required max="{{ now_date|default('') }}" value="{{ request.form.get('event_date','') }}"></div>
+  <div class="col-md-3"><label class="form-label" for="event_time">Time *</label><input class="form-control" id="event_time" name="event_time" type="time" required value="{{ request.form.get('event_time','') }}"></div>
+ </div><h2 class="form-section-title mt-4">Photo & contact</h2><div class="row g-3">
+  <div class="col-md-6"><label class="form-label" for="image">Item image <span class="fw-normal text-muted">(optional)</span></label><input class="form-control" type="file" name="image" id="image" accept=".jpg,.jpeg,.png,.webp,image/*" data-preview="image-preview"><div class="form-text">JPG, PNG or WEBP · max 6 MB. AI still works without a photo.</div><img id="image-preview" class="upload-preview d-none" alt="Selected image preview"></div>
+  <div class="col-md-6"><label class="form-label" for="contact_info">Contact information *</label><input class="form-control" id="contact_info" name="contact_info" required minlength="5" maxlength="140" placeholder="Email or phone for staff follow-up" value="{{ request.form.get('contact_info', current_user.email) }}"><div class="form-text">This is private: only you and administrators can view it.</div></div>
+ </div>
+ <div class="notice-box mt-4">✦ <strong>Automatic approval:</strong> Valid reports go live immediately. Unusually frequent submissions are flagged for staff review. Similarity does not prove ownership.</div>
+ <div class="d-flex align-items-center gap-3 flex-wrap mt-4"><button type="submit" class="btn btn-brand btn-lg">Submit {{ report_type|title }} Report →</button><a href="{{ url_for('student.dashboard') }}" class="text-link">Cancel</a></div>
+ </form></div></div>
+ <div class="col-lg-4"><div class="tip-card"><span class="eyebrow">HELPFUL TIPS</span><h3>Make your report easier to match</h3><ul><li>Be specific with color, brand and distinctive marks.</li><li>Enter the actual place and time of the incident.</li><li>Add a clear photograph when possible.</li><li>Protect private identifiers in public descriptions.</li></ul><hr><small>Photos are securely re-encoded and stored locally. No paid APIs are used.</small></div></div>
+ </div></div>
+{% endblock %}

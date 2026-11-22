@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block content %}
+<section class="auth-bg"><div class="container-xxl py-5"><div class="auth-card mx-auto">
+ <div class="auth-icon">✦</div><span class="eyebrow">JOIN THE CAMPUS COMMUNITY</span><h1>Create your account</h1><p class="text-muted">Start reporting and finding belongings today.</p>
+ <form method="post" action="{{ url_for('auth.register') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3"><label class="form-label" for="name">Full name</label><input class="form-control" id="name" name="name" required minlength="3" maxlength="100" autocomplete="name" value="{{ request.form.get('name', '') }}"></div>
+  <div class="mb-3"><label class="form-label" for="email">Email address</label><input class="form-control" type="email" id="email" name="email" required maxlength="200" autocomplete="email" value="{{ request.form.get('email', '') }}"></div>
+  <div class="mb-3"><label class="form-label" for="student_id">Student ID <span class="text-muted fw-normal">(optional)</span></label><input class="form-control" id="student_id" name="student_id" maxlength="40" value="{{ request.form.get('student_id', '') }}"></div>
+  <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" type="password" id="password" name="password" required minlength="10" autocomplete="new-password"><small class="form-text text-muted">At least 10 characters, one letter and one number.</small></div>
+  <div class="mb-4"><label class="form-label" for="confirm">Confirm password</label><input class="form-control" type="password" id="confirm" name="confirm" required autocomplete="new-password"></div>
+  <button class="btn btn-brand w-100 btn-lg" type="submit">Create account →</button>
+ </form><p class="text-center small text-muted mt-4 mb-0">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+ </div></div></section>
+{% endblock %}

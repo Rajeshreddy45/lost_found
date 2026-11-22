@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block content %}
+<section class="page-header"><div class="container-xxl"><span class="eyebrow">CAMPUS CATALOG</span><h1>Explore lost & found</h1><p>Search current reports and claim an item if you can prove it's yours.</p></div></section>
+<div class="container-xxl py-4">
+ <form class="filter-bar mb-4" method="get" action="{{ url_for('main.browse') }}">
+  <div class="row g-3 align-items-end">
+   <div class="col-md-4"><label class="form-label" for="search">Search items</label><input class="form-control" id="search" name="q" placeholder="e.g. black wallet" value="{{ q }}"></div>
+   <div class="col-md-2"><label class="form-label" for="type">Type</label><select class="form-select" name="type" id="type"><option value="all">All types</option><option value="lost" {% if selected_type == 'lost' %}selected{% endif %}>Lost</option><option value="found" {% if selected_type == 'found' %}selected{% endif %}>Found</option></select></div>
+   <div class="col-md-2"><label class="form-label" for="category">Category</label><select class="form-select" name="category" id="category"><option value="all">All categories</option>{% for c in categories %}<option value="{{ c }}" {% if c == selected_category %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+   <div class="col-md-2"><label class="form-label" for="location">Location</label><input class="form-control" name="location" id="location" value="{{ location }}" placeholder="Library"></div>
+   <div class="col-md-2 d-grid"><button type="submit" class="btn btn-brand">Search →</button></div>
+  </div>
+ </form>
+ <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 mb-0">{{ items|length }} results</h2><span class="text-muted small">Only public, approved/returned reports appear here</span></div>
+ <div class="row g-4">
+ {% for item in items %}<div class="col-sm-6 col-lg-4 col-xl-3">{% include 'partials/item_card.html' %}</div>
+ {% else %}<div class="col-12"><div class="empty-state"><div class="fs-1 mb-2">⌕</div><h3>Nothing matches your search</h3><p>Try fewer filters, or check back after more reports are submitted.</p><a class="btn btn-brand" href="{{ url_for('main.browse') }}">Clear filters</a></div></div>{% endfor %}
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}{% block content %}
+<section class="page-header"><div class="container-xxl d-flex justify-content-between align-items-end flex-wrap gap-3"><div><span class="eyebrow">YOUR CAMPUS SPACE</span><h1>Welcome back, {{ current_user.name.split(' ')[0] }} 👋</h1><p>Track your reports, discover matches and follow your claims.</p></div><div class="d-flex gap-2"><a href="{{ url_for('student.report_new', report_type='lost') }}" class="btn btn-brand">+ Lost item</a><a href="{{ url_for('student.report_new', report_type='found') }}" class="btn btn-outline-dark">+ Found item</a></div></div></section>
+<div class="container-xxl py-4">
+ <div class="row g-3 mb-4">
+  {% for label, value, icon in [('My reports',stats.total,'▤'),('Lost reports',stats.lost,'⌕'),('Found reports',stats.found,'✓'),('Auto-approved',stats.approved,'✦'),('Pending review',stats.pending,'◷')] %}
+    <div class="col-6 col-lg"><div class="dash-stat"><span class="dash-stat-icon">{{ icon }}</span><strong>{{ value }}</strong><span>{{ label }}</span></div></div>
+  {% endfor %}
+ </div>
+ <div class="row g-4">
+ <div class="col-lg-8"><div class="surface-card p-4 h-100"><div class="card-section-head"><div><span class="eyebrow">MY ACTIVITY</span><h2>My reports</h2></div><a href="{{ url_for('student.report_new', report_type='lost') }}" class="text-link">Create report →</a></div>
+ <div class="table-responsive"><table class="table clean-table align-middle"><thead><tr><th>Item</th><th>Type</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>
+ {% for item in reports %}<tr><td><a href="{{ url_for('main.item_detail', item_id=item.id) }}" class="fw-semibold text-decoration-none heading-link">{{ item.name }}</a><div class="text-muted small">{{ item.location }}</div></td><td><span class="status-pill {{ item.report_type }}">{{ item.report_type|title }}</span></td><td class="small">{{ item.created_at.strftime('%d %b %Y') }}</td><td><span class="status-pill {{ item.status }}">{{ item.status|replace('_',' ')|title }}</span></td><td><a href="{{ url_for('student.report_matches', item_id=item.id) }}" class="text-link small">Matches →</a></td></tr>
+ {% else %}<tr><td colspan="5"><div class="empty-inline">No reports yet. Submit your first lost or found report above.</div></td></tr>{% endfor %}
+ </tbody></table></div></div></div>
+ <div class="col-lg-4"><div class="surface-card p-4 h-100"><div class="card-section-head"><div><span class="eyebrow">NEXT STEPS</span><h2>My claims</h2></div></div>
+ {% for claim in claims %}<div class="activity-item"><div class="activity-icon">▣</div><div class="flex-grow-1"><a href="{{ url_for('main.item_detail', item_id=claim.found_item.id) }}" class="fw-semibold text-decoration-none heading-link">{{ claim.found_item.name }}</a><div class="small text-muted">{{ claim.created_at.strftime('%d %b %Y') }}</div><span class="status-pill {{ claim.status }} mt-1">{{ claim.status|replace('_',' ')|title }}</span>{% if claim.admin_note %}<p class="small mt-2 mb-0">Staff note: {{ claim.admin_note }}</p>{% endif %}</div></div>
+ {% else %}<div class="empty-inline">No claims yet. Found your item? Claim it from the catalog.</div>{% endfor %}
+ </div></div>
+ <div class="col-12"><div class="surface-card p-4"><div class="card-section-head"><div><span class="eyebrow">INTELLIGENT SUGGESTIONS</span><h2>AI potential matches</h2></div><span class="text-muted small">Actual locally computed scores</span></div>
+ <div class="row g-3">{% for match in matches %}
+ {% set opposite = match.found_item if match.lost_item.user_id == current_user.id else match.lost_item %}
+ <div class="col-md-6 col-lg-4"><div class="match-preview h-100"><div class="d-flex justify-content-between gap-2"><span class="status-pill {{ match.level|lower }}">{{ match.level }} match</span><strong class="score-big">{{ (match.total_score*100)|round(1) }}%</strong></div><h3 class="h6 mt-3">{{ opposite.name }}</h3><p class="small text-muted mb-2">{{ opposite.category }} · {{ opposite.location }}</p><div class="progress progress-sm"><div class="progress-bar" style="width:{{ (match.total_score*100)|round|int }}%"></div></div><a href="{{ url_for('student.report_matches', item_id=(match.lost_item_id if match.lost_item.user_id == current_user.id else match.found_item_id)) }}" class="text-link small mt-3 d-inline-block">View explanation →</a></div></div>
+ {% else %}<div class="col-12"><div class="empty-inline">No match comparisons yet. Once both lost and found reports exist, matches are calculated automatically.</div></div>{% endfor %}</div>
+ </div></div>
+ </div>
+</div>
+{% endblock %}

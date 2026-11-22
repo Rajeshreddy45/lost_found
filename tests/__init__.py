@@ -1,0 +1,1 @@
+"""CampusFind test suite."""
